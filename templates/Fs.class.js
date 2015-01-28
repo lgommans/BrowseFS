@@ -1,8 +1,8 @@
-// Usage: new Fs("http://[::1]:1337/", "/home/luc", document.body);
+// Usage: new Fs("/home/luc", "http://[::1]:1337/", document.body);
 // Any other functions in the class are not to be used. Though you can hack away if you like, just no warranties :)
 
 // == CONSTRUCTOR ==
-var Fs = function(server, initialPath, domElement) {
+var Fs = function(initialPath, server, domElement) {
 	// Parameter checking
 	if (!domElement) {
 		domElement = document.body;
@@ -25,7 +25,7 @@ var Fs = function(server, initialPath, domElement) {
 
 	// Initialize DOM elements
 	this.rootElement = this.newDiv(domElement);
-	this.topControls = this.newDiv(this.rootElement); // !TODO: use this
+	this.topControls = this.newDiv(this.rootElement);
 	this.contentElement = this.newDiv(this.rootElement);
 
 	// Start!
@@ -39,9 +39,22 @@ Fs.prototype.newDiv = function(appendTo) {
 	return el;
 };
 
-Fs.prototype.cd = function(relativePath) {
+Fs.prototype.abscd = function(absolutePath) {
+	this.currentPath = absolutePath;
+	this.displayFolder(this.currentPath);
+
+	// Selections are in a current folder only, so since we are changing directory we want to empty the selection
+	this.selected = [];
+};
+
+Fs.prototype.relcd = function(relativePath) {
 	// TODO: Resolve relative paths
-	this.currentPath += "/" + relativePath;
+	if (this.currentPath == "") { // We're at the root
+		this.currentPath = relativePath;
+	}
+	else {
+		this.currentPath += "/" + relativePath;
+	}
 	this.displayFolder(this.currentPath);
 
 	// Selections are in a current folder only, so since we are changing directory we want to empty the selection
@@ -49,10 +62,53 @@ Fs.prototype.cd = function(relativePath) {
 };
 
 Fs.prototype.displayFolder = function(path) {
-	var data = this.GET(this.server + "getDirectory/" + path);
+	var data = this.GET(this.server + "getDirectory/" + encodeURIComponent(path));
 	data = this.decode(data);
 
 	data.dirs.sort(this.itemSort);
+
+	// Create the path trail on top of the page
+	this.topControls.innerHTML = "";
+	var path = ("/" + this.currentPath).split('/');
+	var fullpath = "";
+	var first = true;
+	for (var i in path) {
+		if (!first) {
+			fullpath += "/" + path[i];
+			var separator = this.newDiv(this.topControls);
+			separator.innerHTML = "&gt;";
+			separator.style.marginLeft = "8px";
+			separator.style.marginRight = "8px";
+			separator.style.color = "white";
+			separator.style.display = "inline";
+		}
+		else {
+			path[i] = " / ";
+			first = false;
+		}
+
+		var btn = this.newDiv(this.topControls);
+		btn.fullpath = fullpath.substring(1); // Ignore the initial slash
+		console.log(btn.fullpath);
+
+		btn.textContent = path[i];
+		btn.style.display = "inline";
+		btn.style.padding = "6px";
+		btn.style.margin = "2px";
+		btn.style.color = "white";
+
+		btn.addEventListener('click', function(ev) {
+			FS.abscd(ev.target.fullpath);
+		});
+
+		btn.addEventListener('mouseover', function(ev) {
+			ev.target.style.background = "#444";
+		});
+
+		btn.addEventListener('mouseout', function(ev) {
+			ev.target.style.background = "#000";
+		});
+	}
 	
 	this.contentElement.innerHTML = "";
 	for (var i in data.dirs) {
@@ -65,6 +121,13 @@ Fs.prototype.displayFolder = function(path) {
 		this.newTile(data.files[i]);
 	}
 };
+
+Fs.prototype.escapeHTML = function(str) {
+	var pre = document.createElement('pre');
+	var text = document.createTextNode(string);
+	pre.appendChild(text);
+	return pre.innerHTML;
+}
 
 Fs.prototype.itemSort = function(a, b) {
 	if (a.name.charAt(0) == "." && b.name.charAt(0) != ".") {
@@ -145,7 +208,7 @@ Fs.prototype.newTile = function(item, isDir) {
 
 	div.addEventListener('dblclick', function(ev) {
 		if (div.isDir) {
-			FS.cd(div.value);
+			FS.relcd(div.value);
 		}
 		else {
 			FS.open(div.value);

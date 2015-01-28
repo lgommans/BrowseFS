@@ -24,9 +24,11 @@ favorites = []
 ### Commands
 
 
+@app.route('/getDirectory/')
 @app.route('/getDirectory/<path:directory>')
-def getDirectory(directory):
+def getDirectory(directory = ""):
     get_db() # To get favorites (TODO: Find a better way to do this)
+    #directory = "/" + directory[1:] # Ignore the preamable ("P") in the requested directory
     directory = "/" + directory
     contents = ""
     for item in os.listdir(directory):
