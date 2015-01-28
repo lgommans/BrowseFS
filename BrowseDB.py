@@ -117,6 +117,13 @@ def connect_db():
     return rv
 
 
+@app.cli.command('initdb')
+def initdb_command():
+    """Creates the database tables."""
+    init_db()
+    print('Initialized the database.')
+
+
 def init_db():
     """Initializes the database."""
     db = connect_db()
