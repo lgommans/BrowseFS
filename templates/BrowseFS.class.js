@@ -1,8 +1,7 @@
-// Usage: new Fs("/home/luc", "http://[::1]:1337/", document.body);
+// Usage: new BrowseFS("/home/luc", "http://[::1]:1337/", document.body);
 // Any other functions in the class are not to be used. Though you can hack away if you like, just no warranties :)
 
-// == CONSTRUCTOR ==
-var Fs = function(initialPath, server, domElement) {
+var BrowseFS = function(initialPath, server, domElement) {
 	// Parameter checking
 	if (!domElement) {
 		domElement = document.body;
@@ -17,8 +16,8 @@ var Fs = function(initialPath, server, domElement) {
 		server = "./";
 	}
 
-	// Global FS object
-	FS = this;
+	// Global browseFS object
+	browseFS = this;
 	this.currentPath = initialPath.substring(1);
 	this.server = server;
 	this.selected = []; // Selected items
@@ -32,14 +31,13 @@ var Fs = function(initialPath, server, domElement) {
 	this.displayFolder(this.currentPath);
 };
 
-// == METHODS ==
-Fs.prototype.newDiv = function(appendTo) {
+BrowseFS .prototype.newDiv = function(appendTo) {
 	var el = document.createElement("div");
 	appendTo.appendChild(el);
 	return el;
 };
 
-Fs.prototype.abscd = function(absolutePath) {
+BrowseFS.prototype.abscd = function(absolutePath) {
 	this.currentPath = absolutePath;
 	this.displayFolder(this.currentPath);
 
@@ -47,7 +45,7 @@ Fs.prototype.abscd = function(absolutePath) {
 	this.selected = [];
 };
 
-Fs.prototype.relcd = function(relativePath) {
+BrowseFS.prototype.relcd = function(relativePath) {
 	// TODO: Resolve relative paths
 	if (this.currentPath == "") { // We're at the root
 		this.currentPath = relativePath;
@@ -61,7 +59,7 @@ Fs.prototype.relcd = function(relativePath) {
 	this.selected = [];
 };
 
-Fs.prototype.displayFolder = function(path) {
+BrowseFS.prototype.displayFolder = function(path) {
 	var data = this.GET(this.server + "getDirectory/" + encodeURIComponent(path));
 	data = this.decode(data);
 
@@ -89,7 +87,6 @@ Fs.prototype.displayFolder = function(path) {
 
 		var btn = this.newDiv(this.topControls);
 		btn.fullpath = fullpath.substring(1); // Ignore the initial slash
-		console.log(btn.fullpath);
 
 		btn.textContent = path[i];
 		btn.style.display = "inline";
@@ -98,7 +95,7 @@ Fs.prototype.displayFolder = function(path) {
 		btn.style.color = "white";
 
 		btn.addEventListener('click', function(ev) {
-			FS.abscd(ev.target.fullpath);
+			browseFS.abscd(ev.target.fullpath);
 		});
 
 		btn.addEventListener('mouseover', function(ev) {
@@ -122,14 +119,14 @@ Fs.prototype.displayFolder = function(path) {
 	}
 };
 
-Fs.prototype.escapeHTML = function(str) {
+BrowseFS.prototype.escapeHTML = function(str) {
 	var pre = document.createElement('pre');
 	var text = document.createTextNode(string);
 	pre.appendChild(text);
 	return pre.innerHTML;
 }
 
-Fs.prototype.itemSort = function(a, b) {
+BrowseFS.prototype.itemSort = function(a, b) {
 	if (a.name.charAt(0) == "." && b.name.charAt(0) != ".") {
 		return 1;
 	}
@@ -151,7 +148,7 @@ Fs.prototype.itemSort = function(a, b) {
 	return 0;
 };
 
-Fs.prototype.newTile = function(item, isDir) {
+BrowseFS.prototype.newTile = function(item, isDir) {
 	var fav = item.favorite;
 	var name = item.name;
 
@@ -197,59 +194,59 @@ Fs.prototype.newTile = function(item, isDir) {
 		div.selected = !div.selected;
 		if (div.selected) {
 			div.style.background = "#4285F4"; // Blue
-			FS.selected.push(div.value);
+			browseFS.selected.push(div.value);
 		}
 		else {
 			div.style.background = "#0f0f00";
 			div.style.boxShadow = "0px 1px 1px 0px rgba(0, 0, 0, 0.2)";
-			FS.selected.splice(FS.selected.indexOf(div.value));
+			browseFS.selected.splice(FS.selected.indexOf(div.value));
 		}
 	});
 
 	div.addEventListener('dblclick', function(ev) {
 		if (div.isDir) {
-			FS.relcd(div.value);
+			browseFS.relcd(div.value);
 		}
 		else {
-			FS.open(div.value);
+			browseFS.open(div.value);
 		}
         document.getSelection().removeAllRanges();
 	});
 
 	icon.addEventListener('click', function(ev) {
-		FS.toggleFavorite(name);
+		browseFS.toggleFavorite(name);
+		browseFS.cancelBubbling(ev);
 	});
 };
 
-Fs.prototype.toggleFavorite = function(name) {
+BrowseFS.prototype.toggleFavorite = function(name) {
 	this.GET(this.server + "toggleFavorite/" + this.currentPath + "/" + name);
-	this.cancelBubbling(ev);
 	this.reloadFolder();
-}
+};
 
 // Opens a file on the system (calling to the API)
-Fs.prototype.open = function(fname) {
+BrowseFS.prototype.open = function(fname) {
 	this.GET(this.server + "open/3/" + this.currentPath + "/" + fname);
 };
 
-Fs.prototype.reloadFolder = function() {
+BrowseFS.prototype.reloadFolder = function() {
 	this.displayFolder(this.currentPath);
 };
 
-Fs.prototype.cancelBubbling = function(ev) {
+BrowseFS.prototype.cancelBubbling = function(ev) {
 	var evt = ev ? ev : window.event;
 	if (evt.stopPropagation) evt.stopPropagation();
 	if (evt.cancelBubble != null) evt.cancelBubble = true;
 };
 
-Fs.prototype.GET = function(uri) {
+BrowseFS.prototype.GET = function(uri) {
 	var req = new XMLHttpRequest();
 	req.open("GET", uri, false);
 	req.send(null);
 	return req.responseText;
 };
 
-Fs.prototype.decode = function(rawData) {
+BrowseFS.prototype.decode = function(rawData) {
 	var result = {dirs: [], files: []};
 	while (rawData.length > 0) {
 		// Data is structured "int,data" (without quotes) where the int is the data's length.

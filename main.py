@@ -5,11 +5,11 @@ from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, render_template, g
 
 # Flask application name
-app = Flask("fs")
+app = Flask("BrowseFS")
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
-    DB=os.path.expanduser('~/.fs_py.db'),
+    DB=os.path.expanduser('~/.browseFS.db'),
     PORT=4993
 ))
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
@@ -86,9 +86,9 @@ def openFile(mode, file):
 ### Static files
 
 
-@app.route('/Fs.class.js')
+@app.route('/BrowseFS.class.js')
 def getJs():
-    return render_template('Fs.class.js')
+    return render_template('BrowseFS.class.js')
 
 
 @app.route('/front.html')
