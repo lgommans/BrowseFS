@@ -3,11 +3,16 @@
 	<head>
 		<meta charset="UTF-8"/>
 		<title>Filesystem -- Alpha version.</title>
+		<style>
+			body {
+				background: #000;
+			}
+		</style>
 		<script src="Fs.class.js"></script>
 	</head>
 	<body>
 		<script>
-			new Fs("http://[::1]:4993/", "/home/luc", document.body);
+			new Fs("./", "/home/luc");
 		</script>
 	</body>
 </html>
