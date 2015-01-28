@@ -1,11 +1,28 @@
-Contributions of any kind are very welcome! Example contributions could include
-a better code structure (e.g. a better way to serve the static files, or making
-theming possible in Javascript), new or extended features, grammar corrections,
-bug fixes, etc.
+Contributions of any kind are very welcome!
 
 Regarding code style, a tab width of 4 is recommended. Using spaces or tabs
 doesn't really matter, but keep it consistent. Simply look how the code around
 you is structured and structure accordingly.
 
 The code might still heavily change. Remember to pull regularly!
+
+---
+
+Improvements to make (most important first):
+
+* Find a cleaner way to serve static files
+* Support themes
+* Perhaps use Github Issues instead of this file (I use this because it's all
+  local for me now)
+
+New features to build:
+
+* Create new folders
+* Recent files
+* Manipulate existing files and folders. This must be done by selecting the
+  file/folder you want to manipulate and then using the as-of-yet unexistent
+  action bar on the right top.
+* New files (on the left)
+* Go to a folder by typing (with autocompletion)
+* Keyboard navigation in general
 
