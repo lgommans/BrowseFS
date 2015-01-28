@@ -21,5 +21,5 @@ test.
 ## Usage
 
 The only package you need is **python-flask** (apt-get it). Simply run
-./main.py and go to http://[::1]/front.html in Firefox.
+./main.py and go to <http://[::1]/front.html> in Firefox.
 
