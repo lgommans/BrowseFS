@@ -2,7 +2,6 @@
 // Any other functions in the class are not to be used.
 
 var Fs = function(server, initialPath, domElement) {
-	console.log("starting2");
 	this.currentPath = initialPath;
 	this.server = server;
 
@@ -12,10 +11,10 @@ var Fs = function(server, initialPath, domElement) {
 Fs.prototype.newDiv = function(appendTo) {
 	var el = document.createElement("div");
 	appendTo.appendChild(el);
+	return el;
 };
 
 Fs.prototype.init = function(domElement) {
-	console.log(domElement);
 	this.rootElement = this.newDiv(domElement);
 
 	this.contentElement = this.newDiv(this.rootElement);
@@ -25,47 +24,31 @@ Fs.prototype.init = function(domElement) {
 };
 
 Fs.prototype.displayFolder = function(path) {
-	var data = this.getDirectory(path, this.displayData, function(data) {
-		// Error
-		console.log("Error in getDirectory: " + data);
-	});
-};
+	this.statusElement.innerHTML = "Status: Busy...";
 
-Fs.prototype.displayData = function(data) {
+	var data = this.GET(this.server + "getDirectory/" + path.substring(1));
 	data = this.decode(data);
 	
 	this.statusElement.innerHTML = "Status: Ready";
 	this.contentElement.innerHTML = "";
 	for (var i in data.dirs) {
-		this.newTile(i, true);
+		this.newTile(data.dirs[i], true);
 	}
 	this.contentElement.innerHTML += "<hr/>";
 	for (var i in data.files) {
-		this.newTile(i);
+		this.newTile(data.files[i]);
 	}
 };
 
-Fs.prototype.newTile = new function(item, isDir) {
+Fs.prototype.newTile = function(item, isDir) {
 	this.contentElement.innerHTML += "&lt;" + item + "&gt; ";
 };
 
-Fs.prototype.getDirectory = function(path, success, error) {
-	this.statusElement.innerHTML = "Status: Busy...";
-	this.aGET(this.server + "getDirectory/" + path.substring(1), success, error);	
-};
-
-Fs.prototype.aGET = function(uri, callback, errorcallback) {
+Fs.prototype.GET = function(uri) {
 	var req = new XMLHttpRequest();
-	req.open("GET", uri, true);
+	req.open("GET", uri, false);
 	req.send(null);
-	req.onreadystatechange = function() {
-		if (req.readyState == 4) {
-			callback(req.responseText);
-		}
-		if (req.readyState == 5) {
-			errorcallback(req.responseText);
-		}
-	}
+	return req.responseText;
 };
 
 Fs.prototype.decode = function(rawData) {
@@ -80,7 +63,7 @@ Fs.prototype.decode = function(rawData) {
 		// ... then we know the length of the data...
 		var len = parseInt(rawData.substring(0, commapos));
 		// ... then we can grab the data...
-		var item = rawData.substring(commapos + 1, len);
+		var item = rawData.substring(commapos + 1, len + commapos + 1);
 		// ... and finally we can shorten the data left to parse.
 		rawData = rawData.substring(commapos + 1 + len);
 
@@ -95,4 +78,8 @@ Fs.prototype.decode = function(rawData) {
 
 	return result;
 };
+
+Fs.prototype.dummy = function(asdf) {
+	console.log("Dummy!" + asdf);
+}
 

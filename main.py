@@ -14,12 +14,13 @@ app.config.update(dict(
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 
-@app.route('/getDirectory/<directory>')
+@app.route('/getDirectory/<path:directory>')
 def getDirectory(directory):
+    directory = "/" + directory
     contents = ""
-    for item in os.listdir("/" + directory):
+    for item in os.listdir(directory):
         length = len(item)
-        if (os.path.isfile(os.path.join(directory, item))):
+        if os.path.isdir(os.path.join(directory, item)):
             length += 1
             contents += str(length) + ",/" + item
         else:
@@ -28,6 +29,16 @@ def getDirectory(directory):
     return contents
 
 
+@app.route('/Fs.class.js')
+def getJs():
+    return render_template('Fs.class.js')
+
+
+@app.route('/front.html')
+def getFront():
+    return render_template('front.html')
+
+
 if __name__ == '__main__':
-    app.run(host='::1', port=app.config['PORT'])
+    app.run(host='::1', port=app.config['PORT'], debug=True)
 
