@@ -1,0 +1,11 @@
+Contributions of any kind are very welcome! Example contributions could include
+a better code structure (e.g. a better way to serve the static files, or making
+theming possible in Javascript), new or extended features, grammar corrections,
+bug fixes, etc.
+
+Regarding code style, a tab width of 4 is recommended. Using spaces or tabs
+doesn't really matter, but keep it consistent. Simply look how the code around
+you is structured and structure accordingly.
+
+The code might still heavily change. Remember to pull regularly!
+
