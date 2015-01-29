@@ -91,6 +91,7 @@ def getJs():
     return render_template('BrowseFS.class.js')
 
 
+@app.route('/')
 @app.route('/front.html')
 def getFront():
     return render_template('front.html')

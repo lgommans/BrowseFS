@@ -26,5 +26,5 @@ repositories is too old, so I used:
 
 Run `flask --app=BrowseFS initdb` to initialize the database, modify
 `templates/front.html` to include your home path of choice, and finally run the
-server with `./BrowseFS.py`. You can now go to <http://[::1]:4993/front.html>
+server with `./BrowseFS.py`. You can now go to <http://[::1]:4993/>
 
