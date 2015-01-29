@@ -19,7 +19,11 @@ You'll also need a modern browser like Firefox or Chromium.
 
 ## Usage
 
-The only package I think you need is **python-flask** (apt-get it). Then run
-`flask --app=BrowseFS initdb` to initialize the database, and finally run
-the server with `./main.py`. You can now go to <http://[::1]/front.html>
+You need a recent version of Flask. The one currently in the Ubuntu
+repositories is too old, so I used:
+
+`sudo pip install https://github.com/mitsuhiko/flask/tarball/master`
+
+Run `flask --app=BrowseFS initdb` to initialize the database, and finally run
+the server with `./BrowseFS.py`. You can now go to <http://[::1]/front.html>
 
