@@ -24,6 +24,7 @@ repositories is too old, so I used:
 
 `sudo pip install https://github.com/mitsuhiko/flask/tarball/master`
 
-Run `flask --app=BrowseFS initdb` to initialize the database, and finally run
-the server with `./BrowseFS.py`. You can now go to <http://[::1]/front.html>
+Run `flask --app=BrowseFS initdb` to initialize the database, modify
+`templates/front.html` to include your home path of choice, and finally run the
+server with `./BrowseFS.py`. You can now go to <http://[::1]/front.html>
 
