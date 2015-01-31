@@ -86,15 +86,20 @@ def openFile(mode, file):
 ### Static files
 
 
+@app.route('/')
+@app.route('/front.html')
+def getFront():
+    return render_template('front.html')
+
+
 @app.route('/BrowseFS.class.js')
 def getJs():
     return render_template('BrowseFS.class.js')
 
 
-@app.route('/')
-@app.route('/front.html')
-def getFront():
-    return render_template('front.html')
+@app.route('/BrowseFS.css')
+def getCss():
+    return render_template('BrowseFS.css')
 
 
 
