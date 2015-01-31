@@ -24,17 +24,74 @@ var BrowseFS = function(initialPath, server, domElement) {
 
 	// Initialize DOM elements
 	this.rootElement = this.newDiv(domElement);
+	this.headerElement = this.newDiv(this.rootElement);
 	this.topControls = this.newDiv(this.rootElement);
 	this.contentElement = this.newDiv(this.rootElement);
+	this.breadcrumbsElement = this.newDiv(this.topControls);
+	this.fileControls = this.newDiv(this.topControls);
+	this.folderControls = this.newDiv(this.topControls);
+
+	this.rootElement.classList.add("browseFSroot");
+	this.headerElement.classList.add("browseFSheader");
+	this.topControls.classList.add("browseFStopControls");
+	this.breadcrumbsElement.classList.add("browseFSbreadcrumbs");
+	this.fileControls.classList.add("browseFSfileControls");
+	this.folderControls.classList.add("browseFSfolderControls");
+
+	var pasteButton = this.newDiv(this.folderControls);
+	pasteButton.classList.add("browseFSbutton");
+	pasteButton.innerHTML = "P";
+
+	var openButton = this.newDiv(this.folderControls);
+	openButton.classList.add("browseFSbutton");
+	openButton.innerHTML = "O";
+
+	var propertiesButton = this.newDiv(this.folderControls);
+	propertiesButton.classList.add("browseFSbutton");
+	propertiesButton.innerHTML = "?";
 
 	// Start!
 	this.displayFolder(this.currentPath);
 };
 
-BrowseFS .prototype.newDiv = function(appendTo) {
+BrowseFS.prototype.newDiv = function(appendTo) {
 	var el = document.createElement("div");
 	appendTo.appendChild(el);
 	return el;
+};
+
+BrowseFS.prototype.select = function(name) {
+	// TODO: show options
+	this.selected.push(name);
+
+	this.showTopControls();
+};
+
+BrowseFS.prototype.removeSelection = function(name) {
+	// TODO: remove options if selection is now empty
+	this.selected.splice(this.selected.indexOf(div.value));
+
+	this.hideTopControls();
+};
+
+BrowseFS.prototype.showTopControls = function() {
+	if (this.selected.length == 0) {
+		return 1;
+	}
+	// Single & multiple:
+	// - Move
+	// - Remove
+	// - Copy
+	// - Share
+	// - Open (sub: compress)
+	// - Properties
+};
+
+BrowseFS.prototype.hideTopControls = function() {
+	if (this.selected.length != 0) {
+		return 1;
+	}
+	this.fileControls.innerHTML = "";
 };
 
 BrowseFS.prototype.abscd = function(absolutePath) {
@@ -64,20 +121,20 @@ BrowseFS.prototype.displayFolder = function(path) {
 	data = this.decode(data);
 
 	data.dirs.sort(this.itemSort);
+	data.files.sort(this.itemSort);
 
 	// Create the path trail on top of the page
-	this.topControls.innerHTML = "";
+	this.breadcrumbsElement.innerHTML = "";
 	var path = ("/" + this.currentPath).split('/');
 	var fullpath = "";
 	var first = true;
 	for (var i in path) {
 		if (!first) {
 			fullpath += "/" + path[i];
-			var separator = this.newDiv(this.topControls);
+			var separator = this.newDiv(this.breadcrumbsElement);
 			separator.innerHTML = "&gt;";
 			separator.style.marginLeft = "8px";
 			separator.style.marginRight = "8px";
-			separator.style.color = "white";
 			separator.style.display = "inline";
 		}
 		else {
@@ -85,14 +142,13 @@ BrowseFS.prototype.displayFolder = function(path) {
 			first = false;
 		}
 
-		var btn = this.newDiv(this.topControls);
+		var btn = this.newDiv(this.breadcrumbsElement);
 		btn.fullpath = fullpath.substring(1); // Ignore the initial slash
 
 		btn.textContent = path[i];
 		btn.style.display = "inline";
 		btn.style.padding = "6px";
 		btn.style.margin = "2px";
-		btn.style.color = "white";
 
 		btn.addEventListener('click', function(ev) {
 			browseFS.abscd(ev.target.fullpath);
@@ -127,16 +183,16 @@ BrowseFS.prototype.escapeHTML = function(str) {
 }
 
 BrowseFS.prototype.itemSort = function(a, b) {
-	if (a.name.charAt(0) == "." && b.name.charAt(0) != ".") {
-		return 1;
-	}
-	if (a.name.charAt(0) != "." && b.name.charAt(0) == ".") {
-		return -1;
-	}
 	if (!a.favorite && b.favorite) {
 		return 1;
 	}
 	if (a.favorite && !b.favorite) {
+		return -1;
+	}
+	if (a.name.charAt(0) == "." && b.name.charAt(0) != ".") {
+		return 1;
+	}
+	if (a.name.charAt(0) != "." && b.name.charAt(0) == ".") {
 		return -1;
 	}
 	if (a.name.toLowerCase() > b.name.toLowerCase()) {
@@ -194,12 +250,12 @@ BrowseFS.prototype.newTile = function(item, isDir) {
 		div.selected = !div.selected;
 		if (div.selected) {
 			div.style.background = "#4285F4"; // Blue
-			browseFS.selected.push(div.value);
+			browseFS.select(div.value);
 		}
 		else {
 			div.style.background = "#0f0f00";
 			div.style.boxShadow = "0px 1px 1px 0px rgba(0, 0, 0, 0.2)";
-			browseFS.selected.splice(FS.selected.indexOf(div.value));
+			browseFS.removeSelection(div.value);
 		}
 	});
 
