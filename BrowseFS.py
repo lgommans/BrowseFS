@@ -2,7 +2,7 @@
 
 import os
 from sqlite3 import dbapi2 as sqlite3
-from flask import Flask, request, render_template, g, Response
+from flask import Flask, request, send_from_directory, g, redirect
 
 # Flask application name
 app = Flask("BrowseFS")
@@ -87,19 +87,13 @@ def openFile(mode, file):
 
 
 @app.route('/')
-@app.route('/front.html')
-def getFront():
-    return render_template('front.html')
+def getIndex():
+    return getStaticFile('front.html')
 
 
-@app.route('/BrowseFS.class.js')
-def getJs():
-    return render_template('BrowseFS.class.js')
-
-
-@app.route('/BrowseFS.css')
-def getCss():
-    return Response(render_template('BrowseFS.css'), mimetype='text/css')
+@app.route('/static/<path:path>')
+def getStaticFile(path):
+    return send_from_directory('static/', path)
 
 
 
