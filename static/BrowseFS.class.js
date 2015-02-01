@@ -152,8 +152,7 @@ BrowseFS.prototype.relcd = function(relativePath) {
 };
 
 BrowseFS.prototype.displayFolder = function(path) {
-	var data = this.GET(this.server + "getDirectory/" + encodeURIComponent(path));
-	data = this.decode(data);
+	var data = eval("(" + this.GET(this.server + "getDirectory/" + encodeURIComponent(path)) + ")");
 
 	data.dirs.sort(this.itemSort);
 	data.files.sort(this.itemSort);
@@ -308,41 +307,5 @@ BrowseFS.prototype.GET = function(uri) {
 	req.open("GET", uri, false);
 	req.send(null);
 	return req.responseText;
-};
-
-BrowseFS.prototype.decode = function(rawData) {
-	var result = {dirs: [], files: []};
-	while (rawData.length > 0) {
-		// Data is structured "int,data" (without quotes) where the int is the data's length.
-		// First find the comma...
-		var commapos = rawData.indexOf(",");
-		if (commapos == -1) {
-			return console.log("No comma found while there is still data. Wtf?");
-		}
-		// ... then we know the length of the data...
-		var len = parseInt(rawData.substring(0, commapos));
-		// ... then we can grab the data...
-		var item = rawData.substring(commapos + 1, len + commapos + 1);
-		// ... and finally we can shorten the data left to parse.
-		rawData = rawData.substring(commapos + 1 + len);
-
-		// Check whether this item is a favorite
-		var f = false;
-		if (item.charAt(0) == "F") {
-			f = true;
-		}
-		item = item.substring(1);
-
-		// Any item starting with a slash is a directory, everything else a file.
-		if (item.charAt(0) == "/") {
-			item = item.substring(1);
-			result.dirs.push({favorite: f, name: item});
-		}
-		else {
-			result.files.push({favorite: f, name: item});
-		}
-	}
-
-	return result;
 };
 

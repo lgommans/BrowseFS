@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import json
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, send_from_directory, g, redirect
 
@@ -18,6 +19,7 @@ app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 ### Globals
 
 favorites = []
+favorites_loaded = False
 
 
 
@@ -27,30 +29,25 @@ favorites = []
 @app.route('/getDirectory/')
 @app.route('/getDirectory/<path:directory>')
 def getDirectory(directory = ""):
-    get_db() # To get favorites (TODO: Find a better way to do this)
-    #directory = "/" + directory[1:] # Ignore the preamable ("P") in the requested directory
+    load_favorites() # Make sure favorites are loaded
     directory = "/" + directory
-    contents = ""
+    data = {'dirs': [], 'files': []}  
     for item in os.listdir(directory):
-        length = len(item) + 1
-
+        isFav = False
         if os.path.join(directory, item)[1:] in favorites:
-            prefix = "F"
-        else:
-            prefix = "X"
+            isFav = True
 
         if os.path.isdir(os.path.join(directory, item)):
-            length += 1
-            prefix += "/"
+            data['dirs'].append({'name': item, 'favorite': isFav})
+        else:
+            data['files'].append({'name': item, 'favorite': isFav})
 
-        contents += str(length) + "," + prefix + item
-
-    return contents
+    return json.dumps(data)
 
 
 @app.route("/toggleFavorite/<path:directory>")
 def toggleFavorite(directory):
-    db = get_db()
+    load_favorites() # Make sure favorites are loaded
     if directory in favorites:
         db.execute('delete from favorites where path = "' + directory + '"')
         favorites.remove(directory)
@@ -136,10 +133,15 @@ def get_db():
     """Opens a new database connection if there is none yet for the
     current application context.
     """
-    global favorites
     if not hasattr(g, 'sqlite_db'):
         g.sqlite_db = connect_db()
 
+    return g.sqlite_db
+
+
+def load_favorites():
+    global favorites, favorites_loaded
+    if not favorites_loaded:
         db = get_db()
         cur = db.execute('select path from favorites')
         fav = cur.fetchall()
@@ -147,7 +149,7 @@ def get_db():
         for item in fav:
             favorites.append(item[0])
 
-    return g.sqlite_db
+        favorites_loaded = True
 
 
 @app.teardown_appcontext
