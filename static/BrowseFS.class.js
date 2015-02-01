@@ -35,23 +35,59 @@ var BrowseFS = function(initialPath, server, domElement) {
 	this.headerElement.classList.add("browseFSheader");
 	this.topControls.classList.add("browseFStopControls");
 	this.breadcrumbsElement.classList.add("browseFSbreadcrumbs");
-	this.fileControls.classList.add("browseFSfileControls");
-	this.folderControls.classList.add("browseFSfolderControls");
 
-	var pasteButton = this.newDiv(this.folderControls);
-	pasteButton.classList.add("browseFSbutton");
-	pasteButton.innerHTML = "P";
+	this.headerElement.innerHTML = "BrowseFS";
 
-	var openButton = this.newDiv(this.folderControls);
-	openButton.classList.add("browseFSbutton");
-	openButton.innerHTML = "O";
-
-	var propertiesButton = this.newDiv(this.folderControls);
-	propertiesButton.classList.add("browseFSbutton");
-	propertiesButton.innerHTML = "?";
+	this.initializeControls();
 
 	// Start!
 	this.displayFolder(this.currentPath);
+};
+
+BrowseFS.prototype.initializeControls = function() {
+	this.fileControls.classList.add("browseFSfileControls");
+	this.folderControls.classList.add("browseFSfolderControls");
+
+	var openButton = this.newDiv(this.folderControls);
+	openButton.classList.add("browseFSbutton");
+	openButton.classList.add("noselect");
+	openButton.innerHTML = "O";
+	openButton.addEventListener('click', function(ev) {
+		browseFS.open();
+	});
+
+	var propertiesButton = this.newDiv(this.folderControls);
+	propertiesButton.classList.add("browseFSbutton");
+	propertiesButton.classList.add("noselect");
+	propertiesButton.innerHTML = "P";
+	propertiesButton.addEventListener('click', function(ev) {
+		browseFS.properties();
+	});
+};
+
+BrowseFS.prototype.properties = function() {
+	if (this.selected.length == 0) {
+		// show folder properties (e.g. filesize)
+	}
+	else {
+		// show file(s) properties (e.g. a-, c- and m-time, filesize, etc.)
+	}
+};
+
+BrowseFS.prototype.open = function() {
+	if (this.selected.length == 0) {
+		// open current directory
+	}
+	else {
+		// open selected file(s)
+	}
+};
+
+BrowseFS.prototype.showPasteButton = function() {
+	this.pasteButton = this.newDiv(this.folderControls);
+	this.pasteButton.classList.add("browseFSbutton");
+	this.pasteButton.classList.add("noselect");
+	this.pasteButton.innerHTML = "Paste";
 };
 
 BrowseFS.prototype.newDiv = function(appendTo) {
@@ -78,7 +114,7 @@ BrowseFS.prototype.showTopControls = function() {
 	if (this.selected.length == 0) {
 		return 1;
 	}
-	// Single & multiple:
+	// Controls to do:
 	// - Move
 	// - Remove
 	// - Copy
@@ -209,6 +245,7 @@ BrowseFS.prototype.newTile = function(item, isDir) {
 	var name = item.name;
 
 	var div = this.newDiv(this.contentElement);
+	div.classList.add('noselect');
 	var icon = this.newDiv(div);
 	var content = this.newDiv(div);
 
