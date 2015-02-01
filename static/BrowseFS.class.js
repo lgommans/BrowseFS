@@ -97,15 +97,13 @@ BrowseFS.prototype.newDiv = function(appendTo) {
 };
 
 BrowseFS.prototype.select = function(name) {
-	// TODO: show options
 	this.selected.push(name);
 
 	this.showTopControls();
 };
 
 BrowseFS.prototype.removeSelection = function(name) {
-	// TODO: remove options if selection is now empty
-	this.selected.splice(this.selected.indexOf(div.value));
+	this.selected.splice(this.selected.indexOf(name));
 
 	this.hideTopControls();
 };
@@ -118,9 +116,8 @@ BrowseFS.prototype.showTopControls = function() {
 	// - Move
 	// - Remove
 	// - Copy
-	// - Share
-	// - Open (sub: compress)
-	// - Properties
+	// - Share?
+	// - Compress (sub of open)
 };
 
 BrowseFS.prototype.hideTopControls = function() {
@@ -150,6 +147,8 @@ BrowseFS.prototype.relcd = function(relativePath) {
 
 	// Selections are in a current folder only, so since we are changing directory we want to empty the selection
 	this.selected = [];
+	// And if the top controls were active due to some selection, we want to remove those as well...
+	this.hideTopControls();
 };
 
 BrowseFS.prototype.displayFolder = function(path) {
@@ -168,10 +167,8 @@ BrowseFS.prototype.displayFolder = function(path) {
 		if (!first) {
 			fullpath += "/" + path[i];
 			var separator = this.newDiv(this.breadcrumbsElement);
+			separator.classList.add('browseFSbreadcrumbSeparator');
 			separator.innerHTML = "&gt;";
-			separator.style.marginLeft = "8px";
-			separator.style.marginRight = "8px";
-			separator.style.display = "inline";
 		}
 		else {
 			path[i] = " / ";
@@ -181,11 +178,7 @@ BrowseFS.prototype.displayFolder = function(path) {
 		var btn = this.newDiv(this.breadcrumbsElement);
 		btn.classList.add('browseFSbreadcrumb');
 		btn.fullpath = fullpath.substring(1); // Ignore the initial slash
-
 		btn.textContent = path[i];
-		btn.style.display = "inline";
-		btn.style.padding = "6px";
-		btn.style.margin = "2px";
 
 		btn.addEventListener('click', function(ev) {
 			browseFS.abscd(ev.target.fullpath);
@@ -205,8 +198,7 @@ BrowseFS.prototype.displayFolder = function(path) {
 		this.newTile(data.dirs[i], true);
 	}
 	var newline = this.newDiv(this.contentElement); // Add a newline/break
-	newline.style.borderTop = "1px solid grey";
-	newline.style.margin = "2px 0px 2px 0px";
+	newline.classList.add('browseFSfoldersAndFilesSeparator');
 	for (var i in data.files) {
 		this.newTile(data.files[i]);
 	}
@@ -253,19 +245,6 @@ BrowseFS.prototype.newTile = function(item, isDir) {
 	var content = this.newDiv(div);
 	content.classList.add('browseFSitemText');
 
-	icon.style.width = "30px";
-	icon.style.height = "20px";
-	icon.style.display = "inline-block";
-	icon.style.boxShadow = "1px 2px 3px 0px rgba(127, 127, 127, 0.8)";
-	icon.style.marginRight = "8px";
-
-	content.style.width = "140px";
-	content.style.height = "20px";
-	content.style.display = "inline-block";
-	content.style.overflow = "hidden";
-	content.style.float = "right";
-	content.style.whiteSpace = "nowarp";
-
 	div.selected = false;
 	div.value = name;
 	div.favorite = fav;
@@ -273,22 +252,17 @@ BrowseFS.prototype.newTile = function(item, isDir) {
 
 	icon.innerHTML = "<3";
 	if (fav) {
-		icon.style.color = "red";
-	}
-	else {
-		icon.style.color = "white";
+		icon.classList.add('browseFSitemFavoriteActive');
 	}
 	content.innerHTML = name;
 
 	div.addEventListener('click', function(ev) {
+		div.classList.toggle('browseFSitemSelected');
 		div.selected = !div.selected;
 		if (div.selected) {
-			div.style.background = "#4285F4"; // Blue
 			browseFS.select(div.value);
 		}
 		else {
-			div.style.background = "#0f0f00";
-			div.style.boxShadow = "0px 1px 1px 0px rgba(0, 0, 0, 0.2)";
 			browseFS.removeSelection(div.value);
 		}
 	});
