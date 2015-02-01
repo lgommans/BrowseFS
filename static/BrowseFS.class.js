@@ -50,7 +50,7 @@ BrowseFS.prototype.initializeControls = function() {
 
 	var openButton = this.newDiv(this.folderControls);
 	openButton.classList.add("browseFSbutton");
-	openButton.classList.add("noselect");
+	openButton.classList.add("browseFSnoselect");
 	openButton.innerHTML = "O";
 	openButton.addEventListener('click', function(ev) {
 		browseFS.open();
@@ -58,7 +58,7 @@ BrowseFS.prototype.initializeControls = function() {
 
 	var propertiesButton = this.newDiv(this.folderControls);
 	propertiesButton.classList.add("browseFSbutton");
-	propertiesButton.classList.add("noselect");
+	propertiesButton.classList.add("browseFSnoselect");
 	propertiesButton.innerHTML = "P";
 	propertiesButton.addEventListener('click', function(ev) {
 		browseFS.properties();
@@ -86,7 +86,7 @@ BrowseFS.prototype.open = function() {
 BrowseFS.prototype.showPasteButton = function() {
 	this.pasteButton = this.newDiv(this.folderControls);
 	this.pasteButton.classList.add("browseFSbutton");
-	this.pasteButton.classList.add("noselect");
+	this.pasteButton.classList.add("browseFSnoselect");
 	this.pasteButton.innerHTML = "Paste";
 };
 
@@ -179,6 +179,7 @@ BrowseFS.prototype.displayFolder = function(path) {
 		}
 
 		var btn = this.newDiv(this.breadcrumbsElement);
+		btn.classList.add('browseFSbreadcrumb');
 		btn.fullpath = fullpath.substring(1); // Ignore the initial slash
 
 		btn.textContent = path[i];
@@ -245,16 +246,12 @@ BrowseFS.prototype.newTile = function(item, isDir) {
 	var name = item.name;
 
 	var div = this.newDiv(this.contentElement);
-	div.classList.add('noselect');
+	div.classList.add('browseFSnoselect');
+	div.classList.add('browseFSitem');
 	var icon = this.newDiv(div);
+	icon.classList.add('browseFSitemFavorite');
 	var content = this.newDiv(div);
-
-	div.style.margin = "8px";
-	div.style.display = "inline-block";
-	div.style.boxShadow = "0px 1px 1px 0px rgba(255, 255, 255, 0.2)";
-	div.style.height = "20px";
-	div.style.background = "#0f0f00";
-	div.style.color = "white";
+	content.classList.add('browseFSitemText');
 
 	icon.style.width = "30px";
 	icon.style.height = "20px";

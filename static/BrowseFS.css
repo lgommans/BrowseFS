@@ -19,6 +19,10 @@
 	display: inline-block;
 }
 
+.browseFSbreadcrumb {
+	cursor: pointer;
+}
+
 .browseFSfileControls {
 	display: inline-block;
 	float: right;
@@ -32,9 +36,26 @@
 .browseFSbutton {
 	display: inline-block;
 	margin: 6px;
+	cursor: pointer;
 }
 
-.noselect {
+.browseFSitem {
+	margin: 8px;
+	display: inline-block;
+	height: 20px;
+	box-shadow: 0px 1px 1px 0px rgba(255, 255, 255, 0.2);
+	background: #0f0f00;
+}
+
+.browseFSitemText {
+	cursor: pointer;
+}
+
+.browseFSitemFavorite {
+	cursor: pointer;
+}
+
+.browseFSnoselect {
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
