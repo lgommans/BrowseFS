@@ -2,7 +2,7 @@
 
 import os
 from sqlite3 import dbapi2 as sqlite3
-from flask import Flask, request, render_template, g
+from flask import Flask, request, render_template, g, Response
 
 # Flask application name
 app = Flask("BrowseFS")
@@ -99,7 +99,7 @@ def getJs():
 
 @app.route('/BrowseFS.css')
 def getCss():
-    return render_template('BrowseFS.css')
+    return Response(render_template('BrowseFS.css'), mimetype='text/css')
 
 
 
